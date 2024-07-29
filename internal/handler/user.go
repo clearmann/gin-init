@@ -3,7 +3,6 @@ package handler
 import (
     "gin-init/api/v1"
     "gin-init/internal/service"
-    "log"
     "net/http"
 
     "github.com/gin-gonic/gin"
@@ -25,7 +24,7 @@ func NewUserHandler(handler *Handler, userService service.UserService) *UserHand
 // Register godoc
 // @Summary 用户注册
 // @Schemes
-// @Description 目前只支持邮箱登录
+// @Description 目前只支持邮箱注册
 // @Tags 用户模块
 // @Accept json
 // @Produce json
@@ -38,7 +37,6 @@ func (h *UserHandler) Register(ctx *gin.Context) {
         v1.HandleError(ctx, http.StatusBadRequest, v1.ErrBadRequest, nil)
         return
     }
-    log.Println("register")
     if err := h.userService.Register(ctx, req); err != nil {
         h.logger.WithContext(ctx).Error("userService.Register error", zap.Error(err))
         v1.HandleError(ctx, http.StatusInternalServerError, err, nil)
@@ -86,13 +84,13 @@ func (h *UserHandler) Login(ctx *gin.Context) {
 // @Success 200 {object} v1.GetProfileResponse
 // @Router /user [get]
 func (h *UserHandler) GetProfile(ctx *gin.Context) {
-    userId := GetUserIdFromCtx(ctx)
-    if userId == "" {
+    uuid := GetUUIDFromCtx(ctx)
+    if uuid == 0 {
         v1.HandleError(ctx, http.StatusUnauthorized, v1.ErrUnauthorized, nil)
         return
     }
 
-    user, err := h.userService.GetProfile(ctx, userId)
+    user, err := h.userService.GetProfile(ctx, uuid)
     if err != nil {
         v1.HandleError(ctx, http.StatusBadRequest, v1.ErrBadRequest, nil)
         return
@@ -113,7 +111,7 @@ func (h *UserHandler) GetProfile(ctx *gin.Context) {
 // @Success 200 {object} v1.Response
 // @Router /user [put]
 func (h *UserHandler) UpdateProfile(ctx *gin.Context) {
-    userId := GetUserIdFromCtx(ctx)
+    uuid := GetUUIDFromCtx(ctx)
 
     var req v1.UpdateProfileRequest
     if err := ctx.ShouldBindJSON(&req); err != nil {
@@ -121,7 +119,7 @@ func (h *UserHandler) UpdateProfile(ctx *gin.Context) {
         return
     }
 
-    if err := h.userService.UpdateProfile(ctx, userId, &req); err != nil {
+    if err := h.userService.UpdateProfile(ctx, uuid, &req); err != nil {
         v1.HandleError(ctx, http.StatusInternalServerError, v1.ErrInternalServerError, nil)
         return
     }

@@ -10,7 +10,7 @@ type LoginRequest struct {
     Password string `json:"password" binding:"required" example:"123456"`
 }
 type LoginResponseData struct {
-    AccessToken string `json:"accessToken"`
+    AccessToken string `json:"access_token"`
 }
 type LoginResponse struct {
     Response
@@ -22,7 +22,7 @@ type UpdateProfileRequest struct {
     Email    string `json:"email" binding:"required,email" example:"1234@gmail.com"`
 }
 type GetProfileResponseData struct {
-    UserId   string `json:"userId"`
+    UUID     uint64 `json:"uuid"`
     Nickname string `json:"nickname" example:"alan"`
 }
 type GetProfileResponse struct {

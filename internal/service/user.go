@@ -13,8 +13,8 @@ import (
 type UserService interface {
     Register(ctx context.Context, req *v1.RegisterRequest) error
     Login(ctx context.Context, req *v1.LoginRequest) (string, error)
-    GetProfile(ctx context.Context, userId string) (*v1.GetProfileResponseData, error)
-    UpdateProfile(ctx context.Context, userId string, req *v1.UpdateProfileRequest) error
+    GetProfile(ctx context.Context, uuid uint64) (*v1.GetProfileResponseData, error)
+    UpdateProfile(ctx context.Context, uuid uint64, req *v1.UpdateProfileRequest) error
 }
 
 func NewUserService(
@@ -47,12 +47,12 @@ func (s *userService) Register(ctx context.Context, req *v1.RegisterRequest) err
         return err
     }
     // Generate user ID
-    userId, err := s.sid.GenString()
+    uuid, err := s.sid.GenUint64()
     if err != nil {
         return err
     }
     user = &model.User{
-        UserId:   userId,
+        UUID:     uuid,
         Email:    req.Email,
         Password: string(hashedPassword),
     }
@@ -78,7 +78,7 @@ func (s *userService) Login(ctx context.Context, req *v1.LoginRequest) (string, 
     if err != nil {
         return "", err
     }
-    token, err := s.jwt.GenToken(user.UserId, time.Now().Add(time.Hour*24*90))
+    token, err := s.jwt.GenToken(user.UUID, time.Now().Add(time.Hour*24*90))
     if err != nil {
         return "", err
     }
@@ -86,20 +86,20 @@ func (s *userService) Login(ctx context.Context, req *v1.LoginRequest) (string, 
     return token, nil
 }
 
-func (s *userService) GetProfile(ctx context.Context, userId string) (*v1.GetProfileResponseData, error) {
-    user, err := s.userRepo.GetByID(ctx, userId)
+func (s *userService) GetProfile(ctx context.Context, uuid uint64) (*v1.GetProfileResponseData, error) {
+    user, err := s.userRepo.GetByID(ctx, uuid)
     if err != nil {
         return nil, err
     }
 
     return &v1.GetProfileResponseData{
-        UserId:   user.UserId,
+        UUID:     user.UUID,
         Nickname: user.Nickname,
     }, nil
 }
 
-func (s *userService) UpdateProfile(ctx context.Context, userId string, req *v1.UpdateProfileRequest) error {
-    user, err := s.userRepo.GetByID(ctx, userId)
+func (s *userService) UpdateProfile(ctx context.Context, uuid uint64, req *v1.UpdateProfileRequest) error {
+    user, err := s.userRepo.GetByID(ctx, uuid)
     if err != nil {
         return err
     }

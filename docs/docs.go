@@ -60,7 +60,7 @@ const docTemplate = `{
         },
         "/register": {
             "post": {
-                "description": "目前只支持邮箱登录",
+                "description": "目前只支持邮箱注册",
                 "consumes": [
                     "application/json"
                 ],
@@ -178,8 +178,8 @@ const docTemplate = `{
                     "type": "string",
                     "example": "alan"
                 },
-                "userId": {
-                    "type": "string"
+                "uuid": {
+                    "type": "integer"
                 }
             }
         },
@@ -217,7 +217,7 @@ const docTemplate = `{
         "gin-init_api_v1.LoginResponseData": {
             "type": "object",
             "properties": {
-                "accessToken": {
+                "access_token": {
                     "type": "string"
                 }
             }

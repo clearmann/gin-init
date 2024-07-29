@@ -8,6 +8,7 @@ import (
     "gin-init/internal/server"
     "gin-init/pkg/app"
     "gin-init/pkg/log"
+
     "github.com/google/wire"
     "github.com/spf13/viper"
 )

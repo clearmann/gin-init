@@ -6,9 +6,10 @@ import (
     "testing"
     "time"
 
-    "github.com/DATA-DOG/go-sqlmock"
     "gin-init/internal/model"
     "gin-init/internal/repository"
+
+    "github.com/DATA-DOG/go-sqlmock"
     "github.com/stretchr/testify/assert"
     "gorm.io/driver/mysql"
     "gorm.io/gorm"
@@ -94,7 +95,7 @@ func TestUserRepository_GetById(t *testing.T) {
     ctx := context.Background()
     userId := "123"
 
-    rows := sqlmock.NewRows([]string{"id", "user_id", "username", "nickname", "password", "email", "created_at", "updated_at"}).
+    rows := sqlmock.NewRows([]string{"id", "user_id", "username", "Nickname", "password", "email", "created_at", "updated_at"}).
         AddRow(1, "123", "test", "Test", "password", "test@example.com", time.Now(), time.Now())
     mock.ExpectQuery("SELECT \\* FROM `users`").WillReturnRows(rows)
 
@@ -112,7 +113,7 @@ func TestUserRepository_GetByUsername(t *testing.T) {
     ctx := context.Background()
     email := "test@example.com"
 
-    rows := sqlmock.NewRows([]string{"id", "user_id", "username", "nickname", "password", "email", "created_at", "updated_at"}).
+    rows := sqlmock.NewRows([]string{"id", "user_id", "username", "Nickname", "password", "email", "created_at", "updated_at"}).
         AddRow(1, "123", "test", "Test", "password", "test@example.com", time.Now(), time.Now())
     mock.ExpectQuery("SELECT \\* FROM `users`").WillReturnRows(rows)
 

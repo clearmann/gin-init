@@ -3,15 +3,18 @@ package repository
 import (
     "context"
     "fmt"
-    "github.com/glebarez/sqlite"
+    "gin-init/internal/model"
     "gin-init/pkg/log"
     "gin-init/pkg/zapgorm2"
+    "time"
+
+    "github.com/glebarez/sqlite"
     "github.com/redis/go-redis/v9"
     "github.com/spf13/viper"
+    "go.uber.org/zap"
     "gorm.io/driver/mysql"
     "gorm.io/driver/postgres"
     "gorm.io/gorm"
-    "time"
 )
 
 const ctxTxKey = "TxKey"
@@ -89,6 +92,10 @@ func NewDB(conf *viper.Viper, l *log.Logger) *gorm.DB {
     }
     if err != nil {
         panic(err)
+    }
+    err = db.AutoMigrate(&model.User{})
+    if err != nil {
+        zap.L().Error("failed to migrate db", zap.Error(err))
     }
     db = db.Debug()
 

@@ -13,8 +13,8 @@ definitions:
       nickname:
         example: alan
         type: string
-      userId:
-        type: string
+      uuid:
+        type: integer
     type: object
   gin-init_api_v1.LoginRequest:
     properties:
@@ -39,7 +39,7 @@ definitions:
     type: object
   gin-init_api_v1.LoginResponseData:
     properties:
-      accessToken:
+      access_token:
         type: string
     type: object
   gin-init_api_v1.RegisterRequest:
@@ -112,7 +112,7 @@ paths:
     post:
       consumes:
       - application/json
-      description: 目前只支持邮箱登录
+      description: 目前只支持邮箱注册
       parameters:
       - description: params
         in: body

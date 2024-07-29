@@ -17,15 +17,16 @@ import (
     "os"
     "testing"
 
-    "github.com/gin-gonic/gin"
     "gin-init/pkg/config"
     "gin-init/pkg/log"
+
+    "github.com/gin-gonic/gin"
     "github.com/golang/mock/gomock"
     "github.com/stretchr/testify/assert"
 )
 
 var (
-    userId = "xxx"
+    uuid uint64 = 534859034
 )
 var logger *log.Logger
 var hdl *handler.Handler
@@ -111,8 +112,8 @@ func TestUserHandler_GetProfile(t *testing.T) {
     defer ctrl.Finish()
 
     mockUserService := mock_service.NewMockUserService(ctrl)
-    mockUserService.EXPECT().GetProfile(gomock.Any(), userId).Return(&v1.GetProfileResponseData{
-        UserId:   userId,
+    mockUserService.EXPECT().GetProfile(gomock.Any(), uuid).Return(&v1.GetProfileResponseData{
+        UUID:     uuid,
         Nickname: "xxxxx",
     }, nil)
 
@@ -139,7 +140,7 @@ func TestUserHandler_UpdateProfile(t *testing.T) {
     }
 
     mockUserService := mock_service.NewMockUserService(ctrl)
-    mockUserService.EXPECT().UpdateProfile(gomock.Any(), userId, &params).Return(nil)
+    mockUserService.EXPECT().UpdateProfile(gomock.Any(), uuid, &params).Return(nil)
 
     userHandler := handler.NewUserHandler(hdl, mockUserService)
     router.Use(middleware.StrictAuth(jwt, logger))
@@ -164,7 +165,7 @@ func performRequest(r http.Handler, method, path string, body *bytes.Buffer) *ht
     return resp
 }
 func genToken(t *testing.T) string {
-    token, err := jwt.GenToken(userId, time.Now().Add(time.Hour*24*90))
+    token, err := jwt.GenToken(uuid, time.Now().Add(time.Hour*24*90))
     if err != nil {
         t.Error(err)
         return token

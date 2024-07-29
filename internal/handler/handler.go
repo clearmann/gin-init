@@ -18,10 +18,10 @@ func NewHandler(
         logger: logger,
     }
 }
-func GetUserIdFromCtx(ctx *gin.Context) string {
+func GetUUIDFromCtx(ctx *gin.Context) uint64 {
     v, exists := ctx.Get("claims")
     if !exists {
-        return ""
+        return 0
     }
-    return v.(*jwt.MyCustomClaims).UserId
+    return v.(*jwt.MyCustomClaims).UUID
 }
