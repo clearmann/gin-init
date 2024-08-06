@@ -3,7 +3,7 @@ package repository
 import (
     "context"
     "fmt"
-    "gin-init/internal/model"
+    "gin-init/internal/model/model_type"
     "gin-init/pkg/log"
     "gin-init/pkg/zapgorm2"
     "time"
@@ -20,19 +20,15 @@ import (
 const ctxTxKey = "TxKey"
 
 type Repository struct {
-    db *gorm.DB
-    // rdb    *redis.Client
+    db     *gorm.DB
+    rdb    *redis.Client
     logger *log.Logger
 }
 
-func NewRepository(
-    logger *log.Logger,
-    db *gorm.DB,
-// rdb *redis.Client,
-) *Repository {
+func NewRepository(logger *log.Logger, db *gorm.DB, rdb *redis.Client) *Repository {
     return &Repository{
-        db: db,
-        // rdb:    rdb,
+        db:     db,
+        rdb:    rdb,
         logger: logger,
     }
 }
@@ -93,7 +89,7 @@ func NewDB(conf *viper.Viper, l *log.Logger) *gorm.DB {
     if err != nil {
         panic(err)
     }
-    err = db.AutoMigrate(&model.User{})
+    err = db.AutoMigrate(&model_type.User{})
     if err != nil {
         zap.L().Error("failed to migrate db", zap.Error(err))
     }

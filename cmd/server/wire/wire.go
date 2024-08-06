@@ -13,6 +13,7 @@ import (
     "gin-init/pkg/log"
     "gin-init/pkg/server/http"
     "gin-init/pkg/sid"
+
     "github.com/google/wire"
     "github.com/spf13/viper"
 )
@@ -41,11 +42,7 @@ var serverSet = wire.NewSet(
 )
 
 // build App
-func newApp(
-    httpServer *http.Server,
-    job *server.Job,
-// task *server.Task,
-) *app.App {
+func newApp(httpServer *http.Server, job *server.Job) *app.App {
     return app.NewApp(
         app.WithServer(httpServer, job),
         app.WithName("demo-server"),

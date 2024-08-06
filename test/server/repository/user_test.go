@@ -2,11 +2,11 @@ package repository
 
 import (
     "context"
+    "gin-init/internal/model/model_type"
     "gin-init/pkg/log"
     "testing"
     "time"
 
-    "gin-init/internal/model"
     "gin-init/internal/repository"
 
     "github.com/DATA-DOG/go-sqlmock"
@@ -43,7 +43,7 @@ func TestUserRepository_Create(t *testing.T) {
     userRepo, mock := setupRepository(t)
 
     ctx := context.Background()
-    user := &model.User{
+    user := &model_type.User{
         Id:        1,
         UserId:    "123",
         Nickname:  "Test",
@@ -69,7 +69,7 @@ func TestUserRepository_Update(t *testing.T) {
     userRepo, mock := setupRepository(t)
 
     ctx := context.Background()
-    user := &model.User{
+    user := &model_type.User{
         Id:        1,
         UserId:    "123",
         Nickname:  "Test",

@@ -15,7 +15,7 @@ import (
 
 var repositorySet = wire.NewSet(
     repository.NewDB,
-    // repository.NewRedis,
+    repository.NewRedis,
     repository.NewRepository,
     repository.NewUserRepository,
 )
@@ -24,9 +24,7 @@ var serverSet = wire.NewSet(
 )
 
 // build App
-func newApp(
-    migrate *server.Migrate,
-) *app.App {
+func newApp(migrate *server.Migrate) *app.App {
     return app.NewApp(
         app.WithServer(migrate),
         app.WithName("demo-migrate"),

@@ -3,7 +3,7 @@ package service
 import (
     "context"
     v1 "gin-init/api/v1"
-    "gin-init/internal/model"
+    "gin-init/internal/model/model_type"
     "gin-init/internal/repository"
     "time"
 
@@ -51,7 +51,7 @@ func (s *userService) Register(ctx context.Context, req *v1.RegisterRequest) err
     if err != nil {
         return err
     }
-    user = &model.User{
+    user = &model_type.User{
         UUID:     uuid,
         Email:    req.Email,
         Password: string(hashedPassword),

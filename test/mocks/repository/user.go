@@ -5,11 +5,11 @@
 package mock_repository
 
 import (
-	context "context"
-	reflect "reflect"
+    context "context"
+    model "gin-init/internal/model/model_type"
+    reflect "reflect"
 
-	model "gin-init/internal/model"
-	gomock "github.com/golang/mock/gomock"
+    gomock "github.com/golang/mock/gomock"
 )
 
 // MockUserRepository is a mock of UserRepository interface.
