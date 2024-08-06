@@ -9,9 +9,7 @@ type Job struct {
     log *log.Logger
 }
 
-func NewJob(
-    log *log.Logger,
-) *Job {
+func NewJob(log *log.Logger) *Job {
     return &Job{
         log: log,
     }

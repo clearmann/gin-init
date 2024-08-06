@@ -3,7 +3,6 @@ package repository
 import (
     "context"
     "fmt"
-    "gin-init/internal/model/model_type"
     "gin-init/pkg/log"
     "gin-init/pkg/zapgorm2"
     "time"
@@ -89,7 +88,6 @@ func NewDB(conf *viper.Viper, l *log.Logger) *gorm.DB {
     if err != nil {
         panic(err)
     }
-    err = db.AutoMigrate(&model_type.User{})
     if err != nil {
         zap.L().Error("failed to migrate db", zap.Error(err))
     }
