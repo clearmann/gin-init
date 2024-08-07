@@ -1,15 +1,19 @@
 package model_type
 
 import (
+    "time"
+
     "gorm.io/gorm"
 )
 
 type User struct {
-    gorm.Model
-    UUID     uint64 `gorm:"column:uuid;type:uuid"`
-    Nickname string `gorm:"column:nickname;type:varchar(32)"`
-    Password string `gorm:"column:password;type:varchar(32)"`
-    Email    string `gorm:"column:email;type:varchar(32)"`
+    UUID      uint64 `gorm:"column:uuid;type:bigint unsigned;primaryKey"`
+    Nickname  string `gorm:"column:nickname;type:varchar(32);not null"`
+    Password  string `gorm:"column:password;type:varchar(128);not null"`
+    Email     string `gorm:"column:email;type:varchar(32);not null"`
+    CreatedAt time.Time
+    UpdatedAt time.Time
+    DeletedAt gorm.DeletedAt `gorm:"index"`
 }
 
 func (u *User) TableName() string {

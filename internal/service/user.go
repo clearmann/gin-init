@@ -5,6 +5,7 @@ import (
     v1 "gin-init/api/v1"
     "gin-init/internal/model/model_type"
     "gin-init/internal/repository"
+    "log"
     "time"
 
     "golang.org/x/crypto/bcrypt"
@@ -44,22 +45,26 @@ func (s *userService) Register(ctx context.Context, req *v1.RegisterRequest) err
 
     hashedPassword, err := bcrypt.GenerateFromPassword([]byte(req.Password), bcrypt.DefaultCost)
     if err != nil {
+        log.Println("Generate password error:", err)
         return err
     }
-    // Generate user ID
+    // Generate uuid
     uuid, err := s.sid.GenUint64()
     if err != nil {
+        log.Println("Generate uuid error:", err)
         return err
     }
     user = &model_type.User{
         UUID:     uuid,
         Email:    req.Email,
         Password: string(hashedPassword),
+        Nickname: req.Email,
     }
     // Transaction demo
     err = s.tm.Transaction(ctx, func(ctx context.Context) error {
         // Create a user
         if err = s.userRepo.Create(ctx, user); err != nil {
+            log.Println("Create user error:", err)
             return err
         }
         // TODO: other repo
