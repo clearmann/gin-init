@@ -7,6 +7,7 @@ import (
     "gin-init/pkg/zapgorm2"
     "time"
 
+    "github.com/elastic/go-elasticsearch/v8"
     "github.com/glebarez/sqlite"
     "github.com/redis/go-redis/v9"
     "github.com/spf13/viper"
@@ -22,13 +23,15 @@ type Repository struct {
     db     *gorm.DB
     rdb    *redis.Client
     logger *log.Logger
+    es     *elasticsearch.Client
 }
 
-func NewRepository(logger *log.Logger, db *gorm.DB, rdb *redis.Client) *Repository {
+func NewRepository(logger *log.Logger, db *gorm.DB, rdb *redis.Client, es *elasticsearch.Client) *Repository {
     return &Repository{
         db:     db,
         rdb:    rdb,
         logger: logger,
+        es:     es,
     }
 }
 
@@ -119,4 +122,16 @@ func NewRedis(conf *viper.Viper) *redis.Client {
     }
 
     return rdb
+}
+func NewElasticSearch(conf *viper.Viper) *elasticsearch.Client {
+    cfg := elasticsearch.Config{
+        Addresses: []string{conf.GetString("data.elasticsearch.address")},
+        Username:  conf.GetString("data.elasticsearch.username"),
+        Password:  conf.GetString("data.elasticsearch.password"),
+    }
+    elasticClient, err := elasticsearch.NewClient(cfg)
+    if err != nil {
+        panic(fmt.Sprintf("elasticsearch error: %s", err.Error()))
+    }
+    return elasticClient
 }

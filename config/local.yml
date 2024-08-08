@@ -25,7 +25,10 @@ data:
     db: 0
     read_timeout: 0.2s
     write_timeout: 0.2s
-
+  elasticsearch:
+    address: http://localhost:9200
+    username: ""
+    password: ""
 log:
   log_level: debug
   encoding: console           # json or console
