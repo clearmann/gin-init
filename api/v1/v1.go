@@ -7,12 +7,6 @@ import (
     "github.com/gin-gonic/gin"
 )
 
-type Response struct {
-    Code    int    `json:"code"`
-    Message string `json:"message"`
-    Data    any    `json:"data"`
-}
-
 func HandleSuccess(ctx *gin.Context, data any) {
     if data == nil {
         data = map[string]any{}
