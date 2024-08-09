@@ -21,108 +21,79 @@ func NewPostHandler(handler *Handler, postService service.PostService) *PostHand
     }
 }
 
-// Register godoc
-// @Summary 用户注册
+// Create godoc
+// @Summary 创建帖子
 // @Schemes
-// @Description 目前只支持邮箱注册
-// @Tags 用户模块
+// @Description 创建帖子
+// @Tags 帖子模块
 // @Accept json
 // @Produce json
-// @Param request body v1.RegisterRequest true "params"
-// @Success 200 {object} v1.Response
+// @Param request body v1.CreatePostRequest true "params"
+// @Success 200 {object} v1.BaseResponse
 // @Router /register [post]
-func (h *PostHandler) Register(ctx *gin.Context) {
-    req := new(v1.RegisterRequest)
+func (h *PostHandler) Create(ctx *gin.Context) {
+    req := new(v1.CreatePostRequest)
+    resp := new(v1.BaseResponse)
     if err := ctx.ShouldBindJSON(req); err != nil {
         v1.HandleError(ctx, http.StatusBadRequest, v1.ErrBadRequest, nil)
         return
     }
-    if err := h.postService.Register(ctx, req); err != nil {
+    if err := h.postService.Create(ctx, req, resp); err != nil {
         h.logger.WithContext(ctx).Error("userService.Register error", zap.Error(err))
         v1.HandleError(ctx, http.StatusInternalServerError, err, nil)
         return
     }
-
-    v1.HandleSuccess(ctx, nil)
+    ctx.JSON(http.StatusOK, resp)
 }
 
-// Login godoc
-// @Summary 账号登录
+// Delete godoc
+// @Summary 删除帖子
 // @Schemes
-// @Description
-// @Tags 用户模块
+// @Description 删除帖子
+// @Tags 帖子模块
 // @Accept json
 // @Produce json
 // @Param request body v1.LoginRequest true "params"
 // @Success 200 {object} v1.LoginResponse
 // @Router /login [post]
-func (h *PostHandler) Login(ctx *gin.Context) {
-    var req v1.LoginRequest
+func (h *PostHandler) Delete(ctx *gin.Context) {
+    req := new(v1.DeletePostRequest)
+    resp := new(v1.BaseResponse)
     if err := ctx.ShouldBindJSON(&req); err != nil {
         v1.HandleError(ctx, http.StatusBadRequest, v1.ErrBadRequest, nil)
         return
     }
 
-    token, err := h.postService.Login(ctx, &req)
+    err := h.postService.Delete(ctx, req, resp)
     if err != nil {
         v1.HandleError(ctx, http.StatusUnauthorized, v1.ErrUnauthorized, nil)
         return
     }
-    v1.HandleSuccess(ctx, v1.LoginResponseData{
-        AccessToken: token,
-    })
+    ctx.JSON(http.StatusOK, resp)
 }
 
-// GetProfile godoc
-// @Summary 获取用户信息
+// Update godoc
+// @Summary 更新帖子信息
 // @Schemes
-// @Description
-// @Tags 用户模块
+// @Description 更新帖子信息
+// @Tags 帖子模块
 // @Accept json
 // @Produce json
 // @Security Bearer
 // @Success 200 {object} v1.GetProfileResponse
 // @Router /user [get]
-func (h *PostHandler) GetProfile(ctx *gin.Context) {
-    uuid := GetUUIDFromCtx(ctx)
-    if uuid == 0 {
-        v1.HandleError(ctx, http.StatusUnauthorized, v1.ErrUnauthorized, nil)
-        return
-    }
-
-    user, err := h.postService.GetProfile(ctx, uuid)
-    if err != nil {
-        v1.HandleError(ctx, http.StatusBadRequest, v1.ErrBadRequest, nil)
-        return
-    }
-
-    v1.HandleSuccess(ctx, user)
-}
-
-// UpdateProfile godoc
-// @Summary 修改用户信息
-// @Schemes
-// @Description
-// @Tags 用户模块
-// @Accept json
-// @Produce json
-// @Security Bearer
-// @Param request body v1.UpdateProfileRequest true "params"
-// @Success 200 {object} v1.Response
-// @Router /user [put]
-func (h *PostHandler) UpdateProfile(ctx *gin.Context) {
-    uuid := GetUUIDFromCtx(ctx)
-
-    var req v1.UpdateProfileRequest
+func (h *PostHandler) Update(ctx *gin.Context) {
+    req := new(v1.UpdatePostRequest)
+    resp := new(v1.BaseResponse)
     if err := ctx.ShouldBindJSON(&req); err != nil {
         v1.HandleError(ctx, http.StatusBadRequest, v1.ErrBadRequest, nil)
         return
     }
 
-    if err := h.postService.UpdateProfile(ctx, uuid, &req); err != nil {
-        v1.HandleError(ctx, http.StatusInternalServerError, v1.ErrInternalServerError, nil)
+    err := h.postService.Update(ctx, req, resp)
+    if err != nil {
+        v1.HandleError(ctx, http.StatusUnauthorized, v1.ErrUnauthorized, nil)
         return
     }
-
-    v1.HandleSuccess(ctx, nil)
+    ctx.JSON(http.StatusOK, resp)
 }

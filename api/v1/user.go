@@ -1,31 +1,26 @@
 package v1
 
+import model "gin-init/internal/model/model_type"
+
 type RegisterRequest struct {
-    Email    string `json:"email" binding:"required,email" example:"1234@gmail.com"`
-    Password string `json:"password" binding:"required" example:"123456"`
+    Email    string `json:"email" binding:"required,email"`
+    Password string `json:"password" binding:"required"`
 }
 
 type LoginRequest struct {
-    Email    string `json:"email" binding:"required,email" example:"1234@gmail.com"`
-    Password string `json:"password" binding:"required" example:"123456"`
-}
-type LoginResponseData struct {
-    AccessToken string `json:"access_token"`
+    Email    string `json:"email" binding:"required,email"`
+    Password string `json:"password" binding:"required"`
 }
 type LoginResponse struct {
-    Response
-    Data LoginResponseData
+    AccessToken string `json:"access_token"`
 }
 
 type UpdateProfileRequest struct {
-    Nickname string `json:"nickname" example:"alan"`
-    Email    string `json:"email" binding:"required,email" example:"1234@gmail.com"`
+    model.User
 }
-type GetProfileResponseData struct {
-    UUID     uint64 `json:"uuid"`
-    Nickname string `json:"nickname" example:"alan"`
+type GetProfileRequest struct {
+    UUID uint64 `json:"uuid"`
 }
 type GetProfileResponse struct {
-    Response
-    Data GetProfileResponseData
+    User model.User `json:"user"`
 }

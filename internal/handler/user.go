@@ -42,7 +42,6 @@ func (h *UserHandler) Register(ctx *gin.Context) {
         v1.HandleError(ctx, http.StatusInternalServerError, err, nil)
         return
     }
-
     v1.HandleSuccess(ctx, nil)
 }
 
@@ -57,20 +56,19 @@ func (h *UserHandler) Register(ctx *gin.Context) {
 // @Success 200 {object} v1.LoginResponse
 // @Router /login [post]
 func (h *UserHandler) Login(ctx *gin.Context) {
-    var req v1.LoginRequest
-    if err := ctx.ShouldBindJSON(&req); err != nil {
+    req := new(v1.LoginRequest)
+    resp := new(v1.LoginResponse)
+    if err := ctx.ShouldBindJSON(req); err != nil {
         v1.HandleError(ctx, http.StatusBadRequest, v1.ErrBadRequest, nil)
         return
     }
 
-    token, err := h.userService.Login(ctx, &req)
+    err := h.userService.Login(ctx, req, resp)
     if err != nil {
         v1.HandleError(ctx, http.StatusUnauthorized, v1.ErrUnauthorized, nil)
         return
     }
-    v1.HandleSuccess(ctx, v1.LoginResponseData{
-        AccessToken: token,
-    })
+    v1.HandleSuccess(ctx, resp)
 }
 
 // GetProfile godoc
@@ -89,14 +87,17 @@ func (h *UserHandler) GetProfile(ctx *gin.Context) {
         v1.HandleError(ctx, http.StatusUnauthorized, v1.ErrUnauthorized, nil)
         return
     }
-
-    user, err := h.userService.GetProfile(ctx, uuid)
+    var req = &v1.GetProfileRequest{
+        UUID: uuid,
+    }
+    resp := new(v1.GetProfileResponse)
+    err := h.userService.GetProfile(ctx, req, resp)
     if err != nil {
         v1.HandleError(ctx, http.StatusBadRequest, v1.ErrBadRequest, nil)
         return
     }
 
-    v1.HandleSuccess(ctx, user)
+    v1.HandleSuccess(ctx, resp)
 }
 
 // UpdateProfile godoc
@@ -112,14 +113,17 @@ func (h *UserHandler) GetProfile(ctx *gin.Context) {
 // @Router /user [put]
 func (h *UserHandler) UpdateProfile(ctx *gin.Context) {
     uuid := GetUUIDFromCtx(ctx)
-
-    var req v1.UpdateProfileRequest
+    if uuid == 0 {
+        v1.HandleError(ctx, http.StatusUnauthorized, v1.ErrUnauthorized, nil)
+        return
+    }
+    var req *v1.UpdateProfileRequest
     if err := ctx.ShouldBindJSON(&req); err != nil {
         v1.HandleError(ctx, http.StatusBadRequest, v1.ErrBadRequest, nil)
         return
     }
-
-    if err := h.userService.UpdateProfile(ctx, uuid, &req); err != nil {
+    req.UUID = uuid
+    if err := h.userService.UpdateProfile(ctx, req); err != nil {
         v1.HandleError(ctx, http.StatusInternalServerError, v1.ErrInternalServerError, nil)
         return
     }

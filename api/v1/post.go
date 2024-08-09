@@ -8,8 +8,6 @@ type CreatePostRequest struct {
     FavourNum int    `json:"favour_num"`
     UUID      uint64 `json:"uuid"`
 }
-type CreatePostResponse struct {
-}
 type DeletePostRequest struct {
     UUID   uint64 `json:"uuid"`
     PostID int    `json:"post_id"`

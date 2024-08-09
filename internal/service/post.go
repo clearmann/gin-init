@@ -7,10 +7,9 @@ import (
 )
 
 type PostService interface {
-    Register(ctx context.Context, req *v1.RegisterRequest) error
-    Login(ctx context.Context, req *v1.LoginRequest) (string, error)
-    GetProfile(ctx context.Context, uuid uint64) (*v1.GetProfileResponseData, error)
-    UpdateProfile(ctx context.Context, uuid uint64, req *v1.UpdateProfileRequest) error
+    Create(ctx context.Context, req *v1.CreatePostRequest, resp *v1.BaseResponse) error
+    Delete(ctx context.Context, req *v1.DeletePostRequest, resp *v1.BaseResponse) error
+    Update(ctx context.Context, req *v1.UpdatePostRequest, resp *v1.BaseResponse) error
 }
 
 func NewPostService(
@@ -28,18 +27,14 @@ type postService struct {
     *Service
 }
 
-func (s *postService) Register(ctx context.Context, req *v1.RegisterRequest) error {
+func (s *postService) Create(ctx context.Context, req *v1.CreatePostRequest, resp *v1.BaseResponse) error {
     return nil
 }
 
-func (s *postService) Login(ctx context.Context, req *v1.LoginRequest) (string, error) {
-    return "", nil
+func (s *postService) Delete(ctx context.Context, req *v1.DeletePostRequest, resp *v1.BaseResponse) error {
+    return nil
 }
 
-func (s *postService) GetProfile(ctx context.Context, uuid uint64) (*v1.GetProfileResponseData, error) {
-    return nil, nil
-}
-
-func (s *postService) UpdateProfile(ctx context.Context, uuid uint64, req *v1.UpdateProfileRequest) error {
+func (s *postService) Update(ctx context.Context, req *v1.UpdatePostRequest, resp *v1.BaseResponse) error {
     return nil
 }

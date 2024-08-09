@@ -37,6 +37,7 @@ var serviceSet = wire.NewSet(
 var handlerSet = wire.NewSet(
     handler.NewHandler,
     handler.NewUserHandler,
+    handler.NewPostHandler,
 )
 
 var serverSet = wire.NewSet(
