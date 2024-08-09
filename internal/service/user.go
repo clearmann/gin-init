@@ -35,12 +35,20 @@ type userService struct {
 
 func (s *userService) Register(ctx context.Context, req *v1.RegisterRequest) error {
     // check username
-    user, err := s.userRepo.GetByEmail(ctx, req.Email)
+    isExist, err := s.userRepo.ExistUserByEmail(ctx, req.Email)
     if err != nil {
         return v1.ErrInternalServerError
     }
-    if err == nil && user != nil {
+    if !isExist {
         return v1.ErrEmailAlreadyUse
+    }
+
+    isExist, err = s.userRepo.ExistUserByUsername(ctx, req.Email)
+    if err != nil {
+        return v1.ErrInternalServerError
+    }
+    if !isExist {
+        return v1.ErrUsernameAlreadyUse
     }
 
     hashedPassword, err := bcrypt.GenerateFromPassword([]byte(req.Password), bcrypt.DefaultCost)
@@ -54,11 +62,11 @@ func (s *userService) Register(ctx context.Context, req *v1.RegisterRequest) err
         log.Println("Generate uuid error:", err)
         return err
     }
-    user = &model_type.User{
+    var user = &model_type.User{
         UUID:     uuid,
         Email:    req.Email,
         Password: string(hashedPassword),
-        Nickname: req.Email,
+        Username: req.Username,
     }
     // Transaction demo
     err = s.tm.Transaction(ctx, func(ctx context.Context) error {
@@ -73,7 +81,7 @@ func (s *userService) Register(ctx context.Context, req *v1.RegisterRequest) err
 }
 
 func (s *userService) Login(ctx context.Context, req *v1.LoginRequest, resp *v1.LoginResponse) error {
-    user, err := s.userRepo.GetByEmail(ctx, req.Email)
+    user, err := s.userRepo.GetByEmailORUsername(ctx, req.Name)
     if err != nil || user == nil {
         return v1.ErrUnauthorized
     }
@@ -96,20 +104,23 @@ func (s *userService) GetProfile(ctx context.Context, req *v1.GetProfileRequest,
     if err != nil {
         return err
     }
-    resp.User = *user
+    resp.Avatar = user.Avatar
+    resp.Email = user.Email
+    resp.Profile = user.Profile
+    resp.UUID = user.UUID
+    resp.Username = user.Username
     return nil
 }
 
 func (s *userService) UpdateProfile(ctx context.Context, req *v1.UpdateProfileRequest) error {
-    user, err := s.userRepo.GetByID(ctx, req.UUID)
+    isExist, err := s.userRepo.ExistUserByUUID(ctx, req.UUID)
     if err != nil {
         return err
     }
-
-    user.Email = req.Email
-    user.Nickname = req.Nickname
-
-    if err = s.userRepo.Update(ctx, user); err != nil {
+    if !isExist {
+        return v1.ErrNotFound
+    }
+    if err = s.userRepo.Update(ctx, req); err != nil {
         return err
     }
 

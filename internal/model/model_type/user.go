@@ -12,7 +12,6 @@ type User struct {
     Email     string `gorm:"column:email;type:varchar(32);comment:用户邮箱" json:"email,omitempty"`
     Password  string `gorm:"column:password;type:varchar(128);not null;comment:用户密码" json:"password,omitempty"`
     Avatar    string `gorm:"column:avatar;type:varchar(128);comment:用户头像" json:"avatar,omitempty"`
-    Nickname  string `gorm:"column:nickname;type:varchar(128);comment:用户昵称" json:"nickname,omitempty"`
     UnionID   string `gorm:"column:union_id;type:varchar(32);comment:微信开放平台ID" json:"union_id,omitempty"`
     MpOpenID  string `gorm:"column:mp_open_id;type:varchar(32);comment:公众号OpenID" json:"mp_open_id,omitempty"`
     Profile   string `gorm:"column:profile;type:text;comment:用户简介" json:"profile,omitempty"`

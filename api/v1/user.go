@@ -1,14 +1,13 @@
 package v1
 
-import model "gin-init/internal/model/model_type"
-
 type RegisterRequest struct {
+    Username string `json:"username" binding:"required"`
     Email    string `json:"email" binding:"required,email"`
     Password string `json:"password" binding:"required"`
 }
 
 type LoginRequest struct {
-    Email    string `json:"email" binding:"required,email"`
+    Name     string `json:"name" binding:"required"`
     Password string `json:"password" binding:"required"`
 }
 type LoginResponse struct {
@@ -16,11 +15,18 @@ type LoginResponse struct {
 }
 
 type UpdateProfileRequest struct {
-    model.User
+    Username string `json:"username,omitempty"`
+    Profile  string `json:"profile,omitempty"`
+    Email    string `json:"email,omitempty"`
+    UUID     uint64 `json:"uuid,omitempty"`
 }
 type GetProfileRequest struct {
     UUID uint64 `json:"uuid"`
 }
 type GetProfileResponse struct {
-    User model.User `json:"user"`
+    Username string `json:"username,omitempty"`
+    Profile  string `json:"profile,omitempty"`
+    Email    string `json:"email,omitempty"`
+    UUID     uint64 `json:"uuid,omitempty"`
+    Avatar   string `json:"avatar,omitempty"`
 }
