@@ -1,60 +1,5 @@
 definitions:
-  gin-init_api_v1.GetProfileResponse:
-    properties:
-      code:
-        type: integer
-      data:
-        $ref: '#/definitions/gin-init_api_v1.GetProfileResponseData'
-      message:
-        type: string
-    type: object
-  gin-init_api_v1.GetProfileResponseData:
-    properties:
-      nickname:
-        example: alan
-        type: string
-      uuid:
-        type: integer
-    type: object
-  gin-init_api_v1.LoginRequest:
-    properties:
-      email:
-        example: 1234@gmail.com
-        type: string
-      password:
-        example: "123456"
-        type: string
-    required:
-    - email
-    - password
-    type: object
-  gin-init_api_v1.LoginResponse:
-    properties:
-      code:
-        type: integer
-      data:
-        $ref: '#/definitions/gin-init_api_v1.LoginResponseData'
-      message:
-        type: string
-    type: object
-  gin-init_api_v1.LoginResponseData:
-    properties:
-      access_token:
-        type: string
-    type: object
-  gin-init_api_v1.RegisterRequest:
-    properties:
-      email:
-        example: 1234@gmail.com
-        type: string
-      password:
-        example: "123456"
-        type: string
-    required:
-    - email
-    - password
-    type: object
-  gin-init_api_v1.Response:
+  gin-init_api_v1.BaseResponse:
     properties:
       code:
         type: integer
@@ -62,16 +7,114 @@ definitions:
       message:
         type: string
     type: object
-  gin-init_api_v1.UpdateProfileRequest:
+  gin-init_api_v1.GetProfileResponse:
+    properties:
+      avatar:
+        type: string
+      email:
+        type: string
+      profile:
+        type: string
+      username:
+        type: string
+      uuid:
+        type: integer
+    type: object
+  gin-init_api_v1.ListPostRequest:
+    properties:
+      limit:
+        type: integer
+      list_all:
+        type: boolean
+      offset:
+        type: integer
+      order_by:
+        items:
+          type: string
+        type: array
+    type: object
+  gin-init_api_v1.ListPostResponse:
+    properties:
+      data:
+        items:
+          $ref: '#/definitions/gin-init_internal_model_model_type.Post'
+        type: array
+      limit:
+        type: integer
+      offset:
+        type: integer
+      total:
+        type: integer
+    type: object
+  gin-init_api_v1.LoginRequest:
+    properties:
+      name:
+        type: string
+      password:
+        type: string
+    required:
+    - name
+    - password
+    type: object
+  gin-init_api_v1.LoginResponse:
+    properties:
+      access_token:
+        type: string
+    type: object
+  gin-init_api_v1.RegisterRequest:
     properties:
       email:
-        example: 1234@gmail.com
         type: string
-      nickname:
-        example: alan
+      password:
+        type: string
+      username:
         type: string
     required:
     - email
+    - password
+    - username
+    type: object
+  gin-init_api_v1.UpdateProfileRequest:
+    properties:
+      email:
+        type: string
+      profile:
+        type: string
+      username:
+        type: string
+      uuid:
+        type: integer
+    type: object
+  gin-init_internal_model_model_type.Post:
+    properties:
+      content:
+        type: string
+      createdAt:
+        type: string
+      deletedAt:
+        $ref: '#/definitions/gorm.DeletedAt'
+      favourNum:
+        type: integer
+      id:
+        type: integer
+      tags:
+        type: string
+      thumbNum:
+        type: integer
+      title:
+        type: string
+      updatedAt:
+        type: string
+      uuid:
+        type: integer
+    type: object
+  gorm.DeletedAt:
+    properties:
+      time:
+        type: string
+      valid:
+        description: Valid is true if Time is not NULL
+        type: boolean
     type: object
 host: localhost:8000
 info:
@@ -108,6 +151,30 @@ paths:
       summary: 账号登录
       tags:
       - 用户模块
+  /post/list:
+    post:
+      consumes:
+      - application/json
+      description: 列出帖子信息
+      parameters:
+      - description: params
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/gin-init_api_v1.ListPostRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/gin-init_api_v1.ListPostResponse'
+      security:
+      - Bearer: []
+      summary: 列出帖子信息
+      tags:
+      - 帖子模块
   /register:
     post:
       consumes:
@@ -126,7 +193,7 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/gin-init_api_v1.Response'
+            $ref: '#/definitions/gin-init_api_v1.BaseResponse'
       summary: 用户注册
       tags:
       - 用户模块
@@ -162,7 +229,7 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/gin-init_api_v1.Response'
+            $ref: '#/definitions/gin-init_api_v1.BaseResponse'
       security:
       - Bearer: []
       summary: 修改用户信息

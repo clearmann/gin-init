@@ -5,7 +5,7 @@ import (
 )
 
 type Post struct {
-    gorm.DB
+    gorm.Model
     Title     string `gorm:"column:title;type:varchar(128);not null;comment:标题"`
     Content   string `gorm:"column:content;type:text;comment:内容"`
     Tags      string `gorm:"column:tags;type:varchar(512);标签列表(json数组)"`

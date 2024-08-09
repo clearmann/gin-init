@@ -3,6 +3,7 @@ package handler
 import (
     "gin-init/api/v1"
     "gin-init/internal/service"
+    "gin-init/pkg/helper"
     "net/http"
 
     "github.com/gin-gonic/gin"
@@ -29,13 +30,16 @@ func NewUserHandler(handler *Handler, userService service.UserService) *UserHand
 // @Accept json
 // @Produce json
 // @Param request body v1.RegisterRequest true "params"
-// @Success 200 {object} v1.Response
+// @Success 200 {object} v1.BaseResponse
 // @Router /register [post]
 func (h *UserHandler) Register(ctx *gin.Context) {
     req := new(v1.RegisterRequest)
     if err := ctx.ShouldBindJSON(req); err != nil {
         v1.HandleError(ctx, http.StatusBadRequest, v1.ErrBadRequest, nil)
         return
+    }
+    if !helper.VerifyEmail(req.Email) {
+        v1.HandleError(ctx, http.StatusBadRequest, v1.ErrEmailFormat, nil)
     }
     if err := h.userService.Register(ctx, req); err != nil {
         h.logger.WithContext(ctx).Error("userService.Register error", zap.Error(err))
@@ -109,7 +113,7 @@ func (h *UserHandler) GetProfile(ctx *gin.Context) {
 // @Produce json
 // @Security Bearer
 // @Param request body v1.UpdateProfileRequest true "params"
-// @Success 200 {object} v1.Response
+// @Success 200 {object} v1.BaseResponse
 // @Router /user [put]
 func (h *UserHandler) UpdateProfile(ctx *gin.Context) {
     uuid := GetUUIDFromCtx(ctx)

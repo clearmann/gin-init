@@ -3,7 +3,7 @@ package model_type
 import "gorm.io/gorm"
 
 type PostFavour struct {
-    gorm.DB
+    gorm.Model
     PostID int    `gorm:"column:post_id;type:int;not null;comment:帖子id"`
     UUID   uint64 `gorm:"column:uuid;type:bigint unsigned;not null;comment:用户uuid"`
 }

@@ -7,6 +7,12 @@ import (
     "github.com/gin-gonic/gin"
 )
 
+type QueryRequest struct {
+    Offset  int      `json:"offset,omitempty"`
+    Limit   int      `json:"limit,omitempty"`
+    ListAll bool     `json:"list_all,omitempty"`
+    OrderBy []string `json:"order_by,omitempty"`
+}
 type BaseResponse struct {
     Code    int    `json:"code"`
     Message string `json:"message"`

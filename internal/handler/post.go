@@ -21,16 +21,6 @@ func NewPostHandler(handler *Handler, postService service.PostService) *PostHand
     }
 }
 
-// Create godoc
-// @Summary 创建帖子
-// @Schemes
-// @Description 创建帖子
-// @Tags 帖子模块
-// @Accept json
-// @Produce json
-// @Param request body v1.CreatePostRequest true "params"
-// @Success 200 {object} v1.BaseResponse
-// @Router /register [post]
 func (h *PostHandler) Create(ctx *gin.Context) {
     req := new(v1.CreatePostRequest)
     resp := new(v1.BaseResponse)
@@ -46,16 +36,6 @@ func (h *PostHandler) Create(ctx *gin.Context) {
     ctx.JSON(http.StatusOK, resp)
 }
 
-// Delete godoc
-// @Summary 删除帖子
-// @Schemes
-// @Description 删除帖子
-// @Tags 帖子模块
-// @Accept json
-// @Produce json
-// @Param request body v1.LoginRequest true "params"
-// @Success 200 {object} v1.LoginResponse
-// @Router /login [post]
 func (h *PostHandler) Delete(ctx *gin.Context) {
     req := new(v1.DeletePostRequest)
     resp := new(v1.BaseResponse)
@@ -72,16 +52,6 @@ func (h *PostHandler) Delete(ctx *gin.Context) {
     ctx.JSON(http.StatusOK, resp)
 }
 
-// Update godoc
-// @Summary 更新帖子信息
-// @Schemes
-// @Description 更新帖子信息
-// @Tags 帖子模块
-// @Accept json
-// @Produce json
-// @Security Bearer
-// @Success 200 {object} v1.GetProfileResponse
-// @Router /user [get]
 func (h *PostHandler) Update(ctx *gin.Context) {
     req := new(v1.UpdatePostRequest)
     resp := new(v1.BaseResponse)
@@ -93,6 +63,33 @@ func (h *PostHandler) Update(ctx *gin.Context) {
     err := h.postService.Update(ctx, req, resp)
     if err != nil {
         v1.HandleError(ctx, http.StatusUnauthorized, v1.ErrUnauthorized, nil)
+        return
+    }
+    ctx.JSON(http.StatusOK, resp)
+}
+
+// List godoc
+// @Summary 列出帖子信息
+// @Schemes
+// @Description 列出帖子信息
+// @Tags 帖子模块
+// @Accept json
+// @Produce json
+// @Security Bearer
+// @Param request body v1.ListPostRequest true "params"
+// @Success 200 {object} v1.ListPostResponse
+// @Router /post/list [post]
+func (h *PostHandler) List(ctx *gin.Context) {
+    req := new(v1.ListPostRequest)
+    resp := new(v1.ListPostResponse)
+    if err := ctx.ShouldBindJSON(&req); err != nil {
+        v1.HandleError(ctx, http.StatusBadRequest, v1.ErrBadRequest, nil)
+        return
+    }
+
+    err := h.postService.List(ctx, req, resp)
+    if err != nil {
+        v1.HandleError(ctx, http.StatusOK, err, nil)
         return
     }
     ctx.JSON(http.StatusOK, resp)

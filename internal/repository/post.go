@@ -14,6 +14,8 @@ type PostRepository interface {
     Update(ctx context.Context, post *model_type.Post) error
     Delete(ctx context.Context, postID uint) error
     GetPostByID(ctx context.Context, postID uint) (*model_type.Post, error)
+    ListALL(ctx context.Context, posts *[]*model_type.Post) error
+    List(ctx context.Context, req *v1.ListPostRequest, posts *[]*model_type.Post) error
 }
 
 func NewPostRepository(r *Repository) PostRepository {
@@ -50,6 +52,27 @@ func (r *postRepository) GetPostByID(ctx context.Context, postID uint) (*model_t
 }
 func (r *postRepository) Delete(ctx context.Context, postID uint) error {
     if err := r.DB(ctx).Where("id = ?", postID).Delete(&model_type.Post{}).Error; err != nil {
+        if errors.Is(err, gorm.ErrRecordNotFound) {
+            return v1.ErrNotFound
+        }
+        return err
+    }
+    return nil
+}
+func (r *postRepository) ListALL(ctx context.Context, posts *[]*model_type.Post) error {
+    if err := r.DB(ctx).Table(model_type.TableNamePost).Find(posts).Error; err != nil {
+        if errors.Is(err, gorm.ErrRecordNotFound) {
+            return v1.ErrNotFound
+        }
+        return err
+    }
+    return nil
+}
+func (r *postRepository) List(ctx context.Context, req *v1.ListPostRequest, posts *[]*model_type.Post) error {
+    if err := r.DB(ctx).Table(model_type.TableNamePost).
+        Offset(req.Offset).
+        Limit(req.Limit).
+        Find(posts).Error; err != nil {
         if errors.Is(err, gorm.ErrRecordNotFound) {
             return v1.ErrNotFound
         }
