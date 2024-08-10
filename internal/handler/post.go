@@ -21,6 +21,17 @@ func NewPostHandler(handler *Handler, postService service.PostService) *PostHand
     }
 }
 
+// Create godoc
+// @Summary 创建帖子信息
+// @Schemes
+// @Description 创建帖子信息
+// @Tags 帖子模块
+// @Accept json
+// @Produce json
+// @Security Bearer
+// @Param request body v1.CreatePostRequest true "params"
+// @Success 200 {object} v1.BaseResponse
+// @Router /v1/post/create [post]
 func (h *PostHandler) Create(ctx *gin.Context) {
     req := new(v1.CreatePostRequest)
     resp := new(v1.BaseResponse)
@@ -28,6 +39,7 @@ func (h *PostHandler) Create(ctx *gin.Context) {
         v1.HandleError(ctx, http.StatusBadRequest, v1.ErrBadRequest, nil)
         return
     }
+    req.UUID = GetUUIDFromCtx(ctx)
     if err := h.postService.Create(ctx, req, resp); err != nil {
         h.logger.WithContext(ctx).Error("userService.Register error", zap.Error(err))
         v1.HandleError(ctx, http.StatusInternalServerError, err, nil)
@@ -78,7 +90,7 @@ func (h *PostHandler) Update(ctx *gin.Context) {
 // @Security Bearer
 // @Param request body v1.ListPostRequest true "params"
 // @Success 200 {object} v1.ListPostResponse
-// @Router /post/list [post]
+// @Router /v1/post/list [post]
 func (h *PostHandler) List(ctx *gin.Context) {
     req := new(v1.ListPostRequest)
     resp := new(v1.ListPostResponse)

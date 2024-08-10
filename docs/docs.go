@@ -58,45 +58,6 @@ const docTemplate = `{
                 }
             }
         },
-        "/post/list": {
-            "post": {
-                "security": [
-                    {
-                        "Bearer": []
-                    }
-                ],
-                "description": "列出帖子信息",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "帖子模块"
-                ],
-                "summary": "列出帖子信息",
-                "parameters": [
-                    {
-                        "description": "params",
-                        "name": "request",
-                        "in": "body",
-                        "required": true,
-                        "schema": {
-                            "$ref": "#/definitions/gin-init_api_v1.ListPostRequest"
-                        }
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "$ref": "#/definitions/gin-init_api_v1.ListPostResponse"
-                        }
-                    }
-                }
-            }
-        },
         "/register": {
             "post": {
                 "description": "目前只支持邮箱注册",
@@ -193,6 +154,84 @@ const docTemplate = `{
                     }
                 }
             }
+        },
+        "/v1/post/create": {
+            "post": {
+                "security": [
+                    {
+                        "Bearer": []
+                    }
+                ],
+                "description": "创建帖子信息",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "帖子模块"
+                ],
+                "summary": "创建帖子信息",
+                "parameters": [
+                    {
+                        "description": "params",
+                        "name": "request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/gin-init_api_v1.CreatePostRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/gin-init_api_v1.BaseResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/v1/post/list": {
+            "post": {
+                "security": [
+                    {
+                        "Bearer": []
+                    }
+                ],
+                "description": "列出帖子信息",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "帖子模块"
+                ],
+                "summary": "列出帖子信息",
+                "parameters": [
+                    {
+                        "description": "params",
+                        "name": "request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/gin-init_api_v1.ListPostRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/gin-init_api_v1.ListPostResponse"
+                        }
+                    }
+                }
+            }
         }
     },
     "definitions": {
@@ -205,6 +244,29 @@ const docTemplate = `{
                 "data": {},
                 "message": {
                     "type": "string"
+                }
+            }
+        },
+        "gin-init_api_v1.CreatePostRequest": {
+            "type": "object",
+            "properties": {
+                "content": {
+                    "type": "string"
+                },
+                "favour_num": {
+                    "type": "integer"
+                },
+                "tags": {
+                    "type": "string"
+                },
+                "thumb_num": {
+                    "type": "integer"
+                },
+                "title": {
+                    "type": "string"
+                },
+                "uuid": {
+                    "type": "integer"
                 }
             }
         },

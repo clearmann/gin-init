@@ -3,6 +3,7 @@ package service
 import (
     "context"
     v1 "gin-init/api/v1"
+    "gin-init/internal/model/model_type"
     "gin-init/internal/repository"
 )
 
@@ -29,6 +30,16 @@ type postService struct {
 }
 
 func (s *postService) Create(ctx context.Context, req *v1.CreatePostRequest, resp *v1.BaseResponse) error {
+    var post = &model_type.Post{
+        Title:   req.Title,
+        Content: req.Content,
+        Tags:    req.Tags,
+        UUID:    req.UUID,
+    }
+    if err := s.postRepo.Create(ctx, post); err != nil {
+        s.logger.Error("create post error")
+        return v1.ErrInternalServerError
+    }
     return nil
 }
 

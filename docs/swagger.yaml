@@ -7,6 +7,21 @@ definitions:
       message:
         type: string
     type: object
+  gin-init_api_v1.CreatePostRequest:
+    properties:
+      content:
+        type: string
+      favour_num:
+        type: integer
+      tags:
+        type: string
+      thumb_num:
+        type: integer
+      title:
+        type: string
+      uuid:
+        type: integer
+    type: object
   gin-init_api_v1.GetProfileResponse:
     properties:
       avatar:
@@ -151,30 +166,6 @@ paths:
       summary: 账号登录
       tags:
       - 用户模块
-  /post/list:
-    post:
-      consumes:
-      - application/json
-      description: 列出帖子信息
-      parameters:
-      - description: params
-        in: body
-        name: request
-        required: true
-        schema:
-          $ref: '#/definitions/gin-init_api_v1.ListPostRequest'
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            $ref: '#/definitions/gin-init_api_v1.ListPostResponse'
-      security:
-      - Bearer: []
-      summary: 列出帖子信息
-      tags:
-      - 帖子模块
   /register:
     post:
       consumes:
@@ -235,6 +226,54 @@ paths:
       summary: 修改用户信息
       tags:
       - 用户模块
+  /v1/post/create:
+    post:
+      consumes:
+      - application/json
+      description: 创建帖子信息
+      parameters:
+      - description: params
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/gin-init_api_v1.CreatePostRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/gin-init_api_v1.BaseResponse'
+      security:
+      - Bearer: []
+      summary: 创建帖子信息
+      tags:
+      - 帖子模块
+  /v1/post/list:
+    post:
+      consumes:
+      - application/json
+      description: 列出帖子信息
+      parameters:
+      - description: params
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/gin-init_api_v1.ListPostRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/gin-init_api_v1.ListPostResponse'
+      security:
+      - Bearer: []
+      summary: 列出帖子信息
+      tags:
+      - 帖子模块
 securityDefinitions:
   Bearer:
     in: header

@@ -65,6 +65,7 @@ func NewHTTPServer(
         noStrictAuthRouter := v1.Group("/").Use(middleware.NoStrictAuth(jwt, logger))
         {
             noStrictAuthRouter.GET("/user", userHandler.GetProfile)
+            noAuthRouter.POST("/post/create", postHandler.Create)
         }
 
         // Strict permission routing group
