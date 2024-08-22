@@ -46,3 +46,10 @@ type SendPhoneCodeRequest struct {
     Type  string `json:"type"`
     Phone string `json:"phone"`
 }
+
+// BindWeChatRequest 绑定第三方微信请求体
+type BindWeChatRequest struct {
+    Request struct {
+        Code string `json:"code"`
+    }
+}

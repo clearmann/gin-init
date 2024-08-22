@@ -61,6 +61,7 @@ func NewHTTPServer(
             {
                 user.POST("/register", userHandler.Register)
                 user.POST("/login", userHandler.Login)
+                user.POST("/bind/wechat", userHandler.BindWechat)
                 user.POST("/post/list", postHandler.List)
                 user.POST("/phone/send", userHandler.SendPhoneCode)
                 user.POST("/phone/verify", userHandler.VerifyPhoneCode)

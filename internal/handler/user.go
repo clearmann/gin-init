@@ -186,3 +186,27 @@ func (h *UserHandler) VerifyPhoneCode(ctx *gin.Context) {
     }
     v1.HandleSuccess(ctx, resp)
 }
+
+// BindWechat godoc
+// @Summary 绑定微信
+// @Schemes
+// @Description
+// @Tags 用户模块
+// @Accept json
+// @Produce json
+// @Param request body v1.BindWeChatRequest true "params"
+// @Success 200 {object} v1.LoginResponse
+// @Router /login [post]
+func (h *UserHandler) BindWechat(ctx *gin.Context) {
+    req := new(v1.BindWeChatRequest)
+    if err := ctx.ShouldBindJSON(req); err != nil {
+        v1.HandleError(ctx, http.StatusBadRequest, v1.ErrBadRequest, nil)
+        return
+    }
+
+    err := h.userService.BindWechat(ctx, req)
+    if err != nil {
+        v1.HandleError(ctx, http.StatusUnauthorized, v1.ErrUnauthorized, nil)
+        return
+    }
+}

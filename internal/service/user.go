@@ -2,6 +2,7 @@ package service
 
 import (
     "context"
+    "fmt"
     v1 "gin-init/api/v1"
     "gin-init/internal/model/model_type"
     "gin-init/internal/repository"
@@ -12,6 +13,8 @@ import (
     "log"
     "time"
 
+    "github.com/silenceper/wechat/v2"
+    offConfig "github.com/silenceper/wechat/v2/officialaccount/config"
     "golang.org/x/crypto/bcrypt"
 )
 
@@ -21,6 +24,7 @@ type UserService interface {
     GetProfile(ctx context.Context, req *v1.GetProfileRequest, resp *v1.GetProfileResponse) error
     UpdateProfile(ctx context.Context, req *v1.UpdateProfileRequest) error
     SendPhoneCode(ctx context.Context, req *v1.SendPhoneCodeRequest) error
+    BindWechat(ctx context.Context, req *v1.BindWeChatRequest) error
 }
 
 func NewUserService(
@@ -154,5 +158,29 @@ func (s *userService) SendPhoneCode(ctx context.Context, req *v1.SendPhoneCodeRe
         s.logger.Error("发送短信失败")
         return err
     }
+    return nil
+}
+
+func (s *userService) BindWechat(ctx context.Context, req *v1.BindWeChatRequest) error {
+    wApp := wechat.NewWechat()
+    var cfg = &offConfig.Config{
+        AppID:          "",
+        AppSecret:      "",
+        Token:          "",
+        EncodingAESKey: "",
+        Cache:          nil,
+    }
+    weapp := wApp.GetOfficialAccount(cfg).GetOauth()
+
+    tkn, err := weapp.GetUserAccessToken(req.Request.Code)
+    if err != nil {
+        return err
+    }
+    ui, err := weapp.GetUserInfo(tkn.AccessToken, tkn.OpenID, "")
+    if err != nil {
+        return err
+    }
+    // todo
+    fmt.Println(ui)
     return nil
 }
