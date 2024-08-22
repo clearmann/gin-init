@@ -5,6 +5,10 @@ import (
     v1 "gin-init/api/v1"
     "gin-init/internal/model/model_type"
     "gin-init/internal/repository"
+    "gin-init/pkg/utils/constants"
+    "gin-init/pkg/utils/notify/sms"
+    "gin-init/pkg/utils/random"
+    "gin-init/pkg/utils/validate"
     "log"
     "time"
 
@@ -16,6 +20,7 @@ type UserService interface {
     Login(ctx context.Context, req *v1.LoginRequest, resp *v1.LoginResponse) error
     GetProfile(ctx context.Context, req *v1.GetProfileRequest, resp *v1.GetProfileResponse) error
     UpdateProfile(ctx context.Context, req *v1.UpdateProfileRequest) error
+    SendPhoneCode(ctx context.Context, req *v1.SendPhoneCodeRequest) error
 }
 
 func NewUserService(
@@ -29,7 +34,8 @@ func NewUserService(
 }
 
 type userService struct {
-    userRepo repository.UserRepository
+    userRepo    repository.UserRepository
+    settingRepo repository.SettingRepository
     *Service
 }
 
@@ -124,5 +130,29 @@ func (s *userService) UpdateProfile(ctx context.Context, req *v1.UpdateProfileRe
         return err
     }
 
+    return nil
+}
+func (s *userService) SendPhoneCode(ctx context.Context, req *v1.SendPhoneCodeRequest) error {
+    // 判断手机号是否正确
+    if err := validate.IsPhone(req.Phone); err != nil {
+        s.logger.Info("手机号格式错误")
+        return v1.ErrPhoneFormat
+    }
+    // todo：完成具体业务判断
+
+    // 生成和返回手机验证码
+    code := random.Number(6)
+    key := constants.RedisKeyPhoneVerifyCode(req.Phone)
+    _ = s.userRepo.Set(ctx, key, code, time.Minute*5)
+    var cfg sms.SMSConfig
+    // todo 去数据库获取短信配置
+    if err := s.settingRepo.GetYaml("", "", &cfg); err != nil {
+        s.logger.Error("获取短信配置失败")
+        return err
+    }
+    if err := sms.SendPhoneCode(ctx, req.Phone, code, &cfg); err != nil {
+        s.logger.Error("发送短信失败")
+        return err
+    }
     return nil
 }

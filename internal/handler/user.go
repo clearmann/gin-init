@@ -3,7 +3,7 @@ package handler
 import (
     "gin-init/api/v1"
     "gin-init/internal/service"
-    "gin-init/pkg/helper"
+    "gin-init/pkg/utils/validate"
     "net/http"
 
     "github.com/gin-gonic/gin"
@@ -38,7 +38,7 @@ func (h *UserHandler) Register(ctx *gin.Context) {
         v1.HandleError(ctx, http.StatusBadRequest, v1.ErrBadRequest, nil)
         return
     }
-    if !helper.VerifyEmail(req.Email) {
+    if !validate.VerifyEmail(req.Email) {
         v1.HandleError(ctx, http.StatusBadRequest, v1.ErrEmailFormat, nil)
     }
     if err := h.userService.Register(ctx, req); err != nil {
@@ -133,4 +133,56 @@ func (h *UserHandler) UpdateProfile(ctx *gin.Context) {
     }
 
     v1.HandleSuccess(ctx, nil)
+}
+
+// SendPhoneCode godoc
+// @Summary 发送验证码
+// @Schemes
+// @Description
+// @Tags 用户模块
+// @Accept json
+// @Produce json
+// @Param request body v1.LoginRequest true "params"
+// @Success 200 {object} v1.LoginResponse
+// @Router /login [post]
+func (h *UserHandler) SendPhoneCode(ctx *gin.Context) {
+    req := new(v1.SendPhoneCodeRequest)
+    resp := new(v1.BaseResponse)
+    if err := ctx.ShouldBindJSON(req); err != nil {
+        v1.HandleError(ctx, http.StatusBadRequest, v1.ErrBadRequest, nil)
+        return
+    }
+
+    err := h.userService.SendPhoneCode(ctx, req)
+    if err != nil {
+        v1.HandleError(ctx, http.StatusUnauthorized, v1.ErrUnauthorized, nil)
+        return
+    }
+    v1.HandleSuccess(ctx, resp)
+}
+
+// VerifyPhoneCode godoc
+// @Summary 验证验证码
+// @Schemes
+// @Description
+// @Tags 用户模块
+// @Accept json
+// @Produce json
+// @Param request body v1.LoginRequest true "params"
+// @Success 200 {object} v1.LoginResponse
+// @Router /login [post]
+func (h *UserHandler) VerifyPhoneCode(ctx *gin.Context) {
+    req := new(v1.LoginRequest)
+    resp := new(v1.LoginResponse)
+    if err := ctx.ShouldBindJSON(req); err != nil {
+        v1.HandleError(ctx, http.StatusBadRequest, v1.ErrBadRequest, nil)
+        return
+    }
+
+    err := h.userService.Login(ctx, req, resp)
+    if err != nil {
+        v1.HandleError(ctx, http.StatusUnauthorized, v1.ErrUnauthorized, nil)
+        return
+    }
+    v1.HandleSuccess(ctx, resp)
 }

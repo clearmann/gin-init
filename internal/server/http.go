@@ -57,9 +57,14 @@ func NewHTTPServer(
         // No route group has permission
         noAuthRouter := v1.Group("/")
         {
-            noAuthRouter.POST("/register", userHandler.Register)
-            noAuthRouter.POST("/login", userHandler.Login)
-            noAuthRouter.POST("/post/list", postHandler.List)
+            user := noAuthRouter.Group("/user")
+            {
+                user.POST("/register", userHandler.Register)
+                user.POST("/login", userHandler.Login)
+                user.POST("/post/list", postHandler.List)
+                user.POST("/phone/send", userHandler.SendPhoneCode)
+                user.POST("/phone/verify", userHandler.VerifyPhoneCode)
+            }
         }
         // Non-strict permission routing group
         noStrictAuthRouter := v1.Group("/").Use(middleware.NoStrictAuth(jwt, logger))

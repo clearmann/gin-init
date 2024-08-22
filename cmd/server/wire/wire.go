@@ -24,6 +24,7 @@ var repositorySet = wire.NewSet(
     repository.NewElasticSearch,
     repository.NewRepository,
     repository.NewTransaction,
+    repository.NewSettingRepository,
     repository.NewUserRepository,
     repository.NewPostRepository,
 )

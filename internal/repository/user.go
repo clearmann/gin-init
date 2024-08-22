@@ -5,6 +5,7 @@ import (
     "errors"
     v1 "gin-init/api/v1"
     "gin-init/internal/model/model_type"
+    "time"
 
     "gorm.io/gorm"
 )
@@ -18,6 +19,7 @@ type UserRepository interface {
     ExistUserByUUID(ctx context.Context, uuid uint64) (bool, error)
     ExistUserByEmail(ctx context.Context, email string) (bool, error)
     ExistUserByUsername(ctx context.Context, username string) (bool, error)
+    Set(ctx context.Context, key, code string, t time.Duration) error
 }
 
 func NewUserRepository(r *Repository) UserRepository {
@@ -95,4 +97,8 @@ func (r *userRepository) GetByEmailORUsername(ctx context.Context, name string) 
         return nil, err
     }
     return &user, nil
+}
+func (r *userRepository) Set(ctx context.Context, key, code string, t time.Duration) error {
+    r.rdb.Set(ctx, key, code, t)
+    return nil
 }
