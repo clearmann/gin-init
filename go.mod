@@ -1,6 +1,8 @@
 module gin-init
 
-go 1.20
+go 1.21
+
+toolchain go1.21.13
 
 require (
 	github.com/DATA-DOG/go-sqlmock v1.5.2
