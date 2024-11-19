@@ -1,24 +1,24 @@
 package handler
 
 import (
-    "gin-init/api/v1"
-    "gin-init/internal/service"
-    "net/http"
+	"gin-init/api/v1"
+	"gin-init/internal/service"
+	"net/http"
 
-    "github.com/gin-gonic/gin"
-    "go.uber.org/zap"
+	"github.com/gin-gonic/gin"
+	"go.uber.org/zap"
 )
 
 type PostHandler struct {
-    *Handler
-    postService service.PostService
+	*Handler
+	postService service.PostService
 }
 
 func NewPostHandler(handler *Handler, postService service.PostService) *PostHandler {
-    return &PostHandler{
-        Handler:     handler,
-        postService: postService,
-    }
+	return &PostHandler{
+		Handler:     handler,
+		postService: postService,
+	}
 }
 
 // Create godoc
@@ -33,51 +33,51 @@ func NewPostHandler(handler *Handler, postService service.PostService) *PostHand
 // @Success 200 {object} v1.BaseResponse
 // @Router /v1/post/create [post]
 func (h *PostHandler) Create(ctx *gin.Context) {
-    req := new(v1.CreatePostRequest)
-    resp := new(v1.BaseResponse)
-    if err := ctx.ShouldBindJSON(req); err != nil {
-        v1.HandleError(ctx, http.StatusBadRequest, v1.ErrBadRequest, nil)
-        return
-    }
-    req.UUID = GetUUIDFromCtx(ctx)
-    if err := h.postService.Create(ctx, req, resp); err != nil {
-        h.logger.WithContext(ctx).Error("userService.Register error", zap.Error(err))
-        v1.HandleError(ctx, http.StatusInternalServerError, err, nil)
-        return
-    }
-    ctx.JSON(http.StatusOK, resp)
+	req := new(v1.CreatePostRequest)
+	resp := new(v1.BaseResponse)
+	if err := ctx.ShouldBindJSON(req); err != nil {
+		v1.HandleError(ctx, http.StatusBadRequest, v1.ErrBadRequest)
+		return
+	}
+	req.UUID = GetUUIDFromCtx(ctx)
+	if err := h.postService.Create(ctx, req, resp); err != nil {
+		h.logger.WithContext(ctx).Error("userService.Register error", zap.Error(err))
+		v1.HandleError(ctx, http.StatusInternalServerError, err)
+		return
+	}
+	ctx.JSON(http.StatusOK, resp)
 }
 
 func (h *PostHandler) Delete(ctx *gin.Context) {
-    req := new(v1.DeletePostRequest)
-    resp := new(v1.BaseResponse)
-    if err := ctx.ShouldBindJSON(&req); err != nil {
-        v1.HandleError(ctx, http.StatusBadRequest, v1.ErrBadRequest, nil)
-        return
-    }
+	req := new(v1.DeletePostRequest)
+	resp := new(v1.BaseResponse)
+	if err := ctx.ShouldBindJSON(&req); err != nil {
+		v1.HandleError(ctx, http.StatusBadRequest, v1.ErrBadRequest)
+		return
+	}
 
-    err := h.postService.Delete(ctx, req, resp)
-    if err != nil {
-        v1.HandleError(ctx, http.StatusUnauthorized, v1.ErrUnauthorized, nil)
-        return
-    }
-    ctx.JSON(http.StatusOK, resp)
+	err := h.postService.Delete(ctx, req, resp)
+	if err != nil {
+		v1.HandleError(ctx, http.StatusUnauthorized, v1.ErrUnauthorized)
+		return
+	}
+	ctx.JSON(http.StatusOK, resp)
 }
 
 func (h *PostHandler) Update(ctx *gin.Context) {
-    req := new(v1.UpdatePostRequest)
-    resp := new(v1.BaseResponse)
-    if err := ctx.ShouldBindJSON(&req); err != nil {
-        v1.HandleError(ctx, http.StatusBadRequest, v1.ErrBadRequest, nil)
-        return
-    }
+	req := new(v1.UpdatePostRequest)
+	resp := new(v1.BaseResponse)
+	if err := ctx.ShouldBindJSON(&req); err != nil {
+		v1.HandleError(ctx, http.StatusBadRequest, v1.ErrBadRequest)
+		return
+	}
 
-    err := h.postService.Update(ctx, req, resp)
-    if err != nil {
-        v1.HandleError(ctx, http.StatusUnauthorized, v1.ErrUnauthorized, nil)
-        return
-    }
-    ctx.JSON(http.StatusOK, resp)
+	err := h.postService.Update(ctx, req, resp)
+	if err != nil {
+		v1.HandleError(ctx, http.StatusUnauthorized, v1.ErrUnauthorized)
+		return
+	}
+	ctx.JSON(http.StatusOK, resp)
 }
 
 // List godoc
@@ -92,17 +92,17 @@ func (h *PostHandler) Update(ctx *gin.Context) {
 // @Success 200 {object} v1.ListPostResponse
 // @Router /v1/post/list [post]
 func (h *PostHandler) List(ctx *gin.Context) {
-    req := new(v1.ListPostRequest)
-    resp := new(v1.ListPostResponse)
-    if err := ctx.ShouldBindJSON(&req); err != nil {
-        v1.HandleError(ctx, http.StatusBadRequest, v1.ErrBadRequest, nil)
-        return
-    }
+	req := new(v1.ListPostRequest)
+	resp := new(v1.ListPostResponse)
+	if err := ctx.ShouldBindJSON(&req); err != nil {
+		v1.HandleError(ctx, http.StatusBadRequest, v1.ErrBadRequest)
+		return
+	}
 
-    err := h.postService.List(ctx, req, resp)
-    if err != nil {
-        v1.HandleError(ctx, http.StatusOK, err, nil)
-        return
-    }
-    ctx.JSON(http.StatusOK, resp)
+	err := h.postService.List(ctx, req, resp)
+	if err != nil {
+		v1.HandleError(ctx, http.StatusOK, err)
+		return
+	}
+	ctx.JSON(http.StatusOK, resp)
 }
