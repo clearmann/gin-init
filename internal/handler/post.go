@@ -1,6 +1,7 @@
 package handler
 
 import (
+	"gin-init/api/errcode"
 	"gin-init/api/v1"
 	"gin-init/internal/service"
 	"net/http"
@@ -36,13 +37,13 @@ func (h *PostHandler) Create(ctx *gin.Context) {
 	req := new(v1.CreatePostRequest)
 	resp := new(v1.BaseResponse)
 	if err := ctx.ShouldBindJSON(req); err != nil {
-		v1.HandleError(ctx, http.StatusBadRequest, v1.ErrBadRequest)
+		v1.HandleError(ctx, errcode.ErrBadRequest)
 		return
 	}
 	req.UUID = GetUUIDFromCtx(ctx)
 	if err := h.postService.Create(ctx, req, resp); err != nil {
 		h.logger.WithContext(ctx).Error("userService.Register error", zap.Error(err))
-		v1.HandleError(ctx, http.StatusInternalServerError, err)
+		v1.HandleError(ctx, err)
 		return
 	}
 	ctx.JSON(http.StatusOK, resp)
@@ -52,13 +53,13 @@ func (h *PostHandler) Delete(ctx *gin.Context) {
 	req := new(v1.DeletePostRequest)
 	resp := new(v1.BaseResponse)
 	if err := ctx.ShouldBindJSON(&req); err != nil {
-		v1.HandleError(ctx, http.StatusBadRequest, v1.ErrBadRequest)
+		v1.HandleError(ctx, errcode.ErrBadRequest)
 		return
 	}
 
 	err := h.postService.Delete(ctx, req, resp)
 	if err != nil {
-		v1.HandleError(ctx, http.StatusUnauthorized, v1.ErrUnauthorized)
+		v1.HandleError(ctx, err)
 		return
 	}
 	ctx.JSON(http.StatusOK, resp)
@@ -68,13 +69,13 @@ func (h *PostHandler) Update(ctx *gin.Context) {
 	req := new(v1.UpdatePostRequest)
 	resp := new(v1.BaseResponse)
 	if err := ctx.ShouldBindJSON(&req); err != nil {
-		v1.HandleError(ctx, http.StatusBadRequest, v1.ErrBadRequest)
+		v1.HandleError(ctx, err)
 		return
 	}
 
 	err := h.postService.Update(ctx, req, resp)
 	if err != nil {
-		v1.HandleError(ctx, http.StatusUnauthorized, v1.ErrUnauthorized)
+		v1.HandleError(ctx, err)
 		return
 	}
 	ctx.JSON(http.StatusOK, resp)
@@ -95,13 +96,13 @@ func (h *PostHandler) List(ctx *gin.Context) {
 	req := new(v1.ListPostRequest)
 	resp := new(v1.ListPostResponse)
 	if err := ctx.ShouldBindJSON(&req); err != nil {
-		v1.HandleError(ctx, http.StatusBadRequest, v1.ErrBadRequest)
+		v1.HandleError(ctx, err)
 		return
 	}
 
 	err := h.postService.List(ctx, req, resp)
 	if err != nil {
-		v1.HandleError(ctx, http.StatusOK, err)
+		v1.HandleError(ctx, err)
 		return
 	}
 	ctx.JSON(http.StatusOK, resp)

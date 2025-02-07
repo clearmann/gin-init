@@ -1,10 +1,10 @@
 package handler
 
 import (
+	"gin-init/api/errcode"
 	"gin-init/api/v1"
 	"gin-init/internal/service"
 	"gin-init/pkg/utils/validate"
-	"net/http"
 
 	"github.com/gin-gonic/gin"
 	"go.uber.org/zap"
@@ -35,15 +35,15 @@ func NewUserHandler(handler *Handler, userService service.UserService) *UserHand
 func (h *UserHandler) Register(ctx *gin.Context) {
 	req := new(v1.RegisterRequest)
 	if err := ctx.ShouldBindJSON(req); err != nil {
-		v1.HandleError(ctx, http.StatusBadRequest, v1.ErrBadRequest)
+		v1.HandleError(ctx, errcode.ErrBadRequest)
 		return
 	}
 	if !validate.VerifyEmail(req.Email) {
-		v1.HandleError(ctx, http.StatusBadRequest, v1.ErrEmailFormat)
+		v1.HandleError(ctx, errcode.ErrEmailFormat)
 	}
 	if err := h.userService.Register(ctx, req); err != nil {
 		h.logger.WithContext(ctx).Error("userService.Register error", zap.Error(err))
-		v1.HandleError(ctx, http.StatusInternalServerError, err)
+		v1.HandleError(ctx, err)
 		return
 	}
 	v1.HandleSuccess(ctx, nil)
@@ -63,13 +63,13 @@ func (h *UserHandler) Login(ctx *gin.Context) {
 	req := new(v1.LoginRequest)
 	resp := new(v1.LoginResponse)
 	if err := ctx.ShouldBindJSON(req); err != nil {
-		v1.HandleError(ctx, http.StatusBadRequest, v1.ErrBadRequest)
+		v1.HandleError(ctx, errcode.ErrBadRequest)
 		return
 	}
 
 	err := h.userService.Login(ctx, req, resp)
 	if err != nil {
-		v1.HandleError(ctx, http.StatusUnauthorized, v1.ErrUnauthorized)
+		v1.HandleError(ctx, errcode.ErrNoAuth)
 		return
 	}
 	v1.HandleSuccess(ctx, resp)
@@ -88,7 +88,7 @@ func (h *UserHandler) Login(ctx *gin.Context) {
 func (h *UserHandler) GetProfile(ctx *gin.Context) {
 	uuid := GetUUIDFromCtx(ctx)
 	if uuid == 0 {
-		v1.HandleError(ctx, http.StatusUnauthorized, v1.ErrUnauthorized)
+		v1.HandleError(ctx, errcode.ErrNoAuth)
 		return
 	}
 	var req = &v1.GetProfileRequest{
@@ -97,7 +97,7 @@ func (h *UserHandler) GetProfile(ctx *gin.Context) {
 	resp := new(v1.GetProfileResponse)
 	err := h.userService.GetProfile(ctx, req, resp)
 	if err != nil {
-		v1.HandleError(ctx, http.StatusBadRequest, v1.ErrBadRequest)
+		v1.HandleError(ctx, errcode.ErrBadRequest)
 		return
 	}
 
@@ -118,17 +118,17 @@ func (h *UserHandler) GetProfile(ctx *gin.Context) {
 func (h *UserHandler) UpdateProfile(ctx *gin.Context) {
 	uuid := GetUUIDFromCtx(ctx)
 	if uuid == 0 {
-		v1.HandleError(ctx, http.StatusUnauthorized, v1.ErrUnauthorized)
+		v1.HandleError(ctx, errcode.ErrNoAuth)
 		return
 	}
 	var req *v1.UpdateProfileRequest
 	if err := ctx.ShouldBindJSON(&req); err != nil {
-		v1.HandleError(ctx, http.StatusBadRequest, v1.ErrBadRequest)
+		v1.HandleError(ctx, errcode.ErrBadRequest)
 		return
 	}
 	req.UUID = uuid
 	if err := h.userService.UpdateProfile(ctx, req); err != nil {
-		v1.HandleError(ctx, http.StatusInternalServerError, v1.ErrInternalServerError)
+		v1.HandleError(ctx, errcode.ErrNoAuth)
 		return
 	}
 
@@ -149,13 +149,13 @@ func (h *UserHandler) SendPhoneCode(ctx *gin.Context) {
 	req := new(v1.SendPhoneCodeRequest)
 	resp := new(v1.BaseResponse)
 	if err := ctx.ShouldBindJSON(req); err != nil {
-		v1.HandleError(ctx, http.StatusBadRequest, v1.ErrBadRequest)
+		v1.HandleError(ctx, errcode.ErrBadRequest)
 		return
 	}
 
 	err := h.userService.SendPhoneCode(ctx, req)
 	if err != nil {
-		v1.HandleError(ctx, http.StatusUnauthorized, v1.ErrUnauthorized)
+		v1.HandleError(ctx, errcode.ErrNoAuth)
 		return
 	}
 	v1.HandleSuccess(ctx, resp)
@@ -175,13 +175,13 @@ func (h *UserHandler) VerifyPhoneCode(ctx *gin.Context) {
 	req := new(v1.LoginRequest)
 	resp := new(v1.LoginResponse)
 	if err := ctx.ShouldBindJSON(req); err != nil {
-		v1.HandleError(ctx, http.StatusBadRequest, v1.ErrBadRequest)
+		v1.HandleError(ctx, errcode.ErrBadRequest)
 		return
 	}
 
 	err := h.userService.Login(ctx, req, resp)
 	if err != nil {
-		v1.HandleError(ctx, http.StatusUnauthorized, v1.ErrUnauthorized)
+		v1.HandleError(ctx, errcode.ErrNoAuth)
 		return
 	}
 	v1.HandleSuccess(ctx, resp)
@@ -200,13 +200,13 @@ func (h *UserHandler) VerifyPhoneCode(ctx *gin.Context) {
 func (h *UserHandler) BindWechat(ctx *gin.Context) {
 	req := new(v1.BindWeChatRequest)
 	if err := ctx.ShouldBindJSON(req); err != nil {
-		v1.HandleError(ctx, http.StatusBadRequest, v1.ErrBadRequest)
+		v1.HandleError(ctx, errcode.ErrBadRequest)
 		return
 	}
 
 	err := h.userService.BindWechat(ctx, req)
 	if err != nil {
-		v1.HandleError(ctx, http.StatusUnauthorized, v1.ErrUnauthorized)
+		v1.HandleError(ctx, errcode.ErrNoAuth)
 		return
 	}
 }
